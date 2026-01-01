@@ -1,1 +1,22 @@
 @import "tailwindcss";
+
+/* --- GLOBAL ICON ANIMATION --- */
+
+/* 1. Make all icons transition smoothly */
+svg {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy "Pop" Effect */
+}
+
+/* 2. When you hover over the icon itself -> Scale it up */
+svg:hover {
+  transform: scale(1.25); /* Grows 25% larger */
+  filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.6)); /* Adds a small blue glow */
+  cursor: pointer;
+  z-index: 10; /* Ensures it pops ON TOP of other things */
+}
+
+/* 3. When you hover over a button/link -> Scale the icon inside it */
+button:hover svg, 
+a:hover svg {
+  transform: scale(1.2);
+}

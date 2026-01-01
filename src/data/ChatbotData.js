@@ -282,6 +282,6 @@ export const chatData = [
   },
   {
     keywords: ["upload website", "push to github", "host on github", "upload code", "deploy", "how to push"],
-    answer: "To upload your website to GitHub, follow these steps in order:\n\n1. note:This commands will available in dashboard copy from dashboard it wil easy and fast to host website on github. Initialize Git:\n`git init`\n\n2. Add all files:\n`git add .`\n\n3. Save changes:\n`git commit -m \"First commit\"`\n\n4. Rename branch to main:\n`git branch -M main`\n\n5. Connect to GitHub (replace URL with your repo link):\n`git remote add origin https://github.com/username/repo-name.git`\n\n6. Upload:\n`git push -u origin main`"
+    answer: "**Note:** These commands are often available directly on your GitHub dashboard after creating a new repository. Copying them from there is easier and faster.\n\nTo upload your website to GitHub, follow these steps in order:\n\n1. Initialize Git:\n`git init`\n\n2. Add all files:\n`git add .`\n\n3. Save changes:\n`git commit -m \"First commit\"`\n\n4. Rename branch to main:\n`git branch -M main`\n\n5. Connect to GitHub (replace URL with your repo link):\n`git remote add origin https://github.com/username/repo-name.git`\n\n6. Upload:\n`git push -u origin main`"
   },
 ];

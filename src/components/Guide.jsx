@@ -11,8 +11,7 @@ const Guide = ({ isOpen, onClose }) => {
     e.preventDefault();
     setLoading(true);
 
-    // Replace these IDs with your actual EmailJS Service/Template IDs
-    // Sign up at https://www.emailjs.com/ to get them for free.
+    // Using your provided EmailJS credentials
     emailjs.sendForm('service_stannln', 'template_1oi04sq', form.current, 'E3aLBvre2I4GgZoq8')
       .then((result) => {
           setSent(true);
@@ -28,15 +27,20 @@ const Guide = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex justify-center items-center p-4 animate-in fade-in">
-      <div className="bg-slate-900 w-full max-w-4xl max-h-[90vh] rounded-2xl border border-slate-700 shadow-2xl overflow-hidden flex flex-col md:flex-row">
+      {/* UPDATED CONTAINER:
+        - max-h-[90vh]: Keeps it from being taller than the screen
+        - overflow-y-auto: Allows scrolling if content is too tall (crucial for mobile)
+        - scrollbar-hide: Hides the scrollbar for a cleaner look (optional class)
+      */}
+      <div className="bg-slate-900 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 shadow-2xl flex flex-col md:flex-row scrollbar-hide">
         
         {/* LEFT SIDE: GUIDE & FAQ */}
-        <div className="flex-1 p-6 overflow-y-auto border-b md:border-b-0 md:border-r border-slate-700">
+        <div className="flex-1 p-6 border-b md:border-b-0 md:border-r border-slate-700">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-white flex items-center gap-2">
               <HelpCircle className="text-blue-400" /> User Guide
             </h2>
-            <button onClick={onClose} className="md:hidden text-slate-400"><X /></button>
+            <button onClick={onClose} className="md:hidden text-slate-400 p-2 hover:text-white"><X /></button>
           </div>
 
           <div className="space-y-6 text-slate-300">
@@ -55,7 +59,7 @@ const Guide = ({ isOpen, onClose }) => {
             <section>
               <h3 className="text-lg font-bold text-white mb-2">🤖 AI Chatbot</h3>
               <p className="text-sm">
-                The sidebar AI is powered by OpenAI. If you can't find a command in the list, ask the AI! 
+                The floating bot at the bottom right can answer questions instantly.
                 <br/><em>Example: "How do I undo a merge in Git?"</em>
               </p>
             </section>
@@ -64,7 +68,7 @@ const Guide = ({ isOpen, onClose }) => {
              <section>
               <h3 className="text-lg font-bold text-white mb-2">🔐 Admin Access</h3>
               <p className="text-sm">
-                Only the Admin (Abizer) can add or delete commands. If you are a visitor, you can view and copy commands freely.
+                Only the Admin (Abizer) can add or delete commands. Visitors can view and copy commands freely.
               </p>
             </section>
 
@@ -74,11 +78,11 @@ const Guide = ({ isOpen, onClose }) => {
               <div className="space-y-3">
                 <details className="bg-slate-800/50 p-3 rounded-lg cursor-pointer">
                   <summary className="font-semibold text-white">Can I contribute a command?</summary>
-                  <p className="text-sm mt-2 text-slate-400">Yes! Use the feedback form on the right to send a new command request to the admin.</p>
+                  <p className="text-sm mt-2 text-slate-400">Yes! Use the feedback form to send a new command request.</p>
                 </details>
                 <details className="bg-slate-800/50 p-3 rounded-lg cursor-pointer">
                   <summary className="font-semibold text-white">Is this free to use?</summary>
-                  <p className="text-sm mt-2 text-slate-400">Absolutely. This tool is free for all developers and students.</p>
+                  <p className="text-sm mt-2 text-slate-400">Absolutely. This tool is free for all developers.</p>
                 </details>
               </div>
             </section>
@@ -95,7 +99,7 @@ const Guide = ({ isOpen, onClose }) => {
           <p className="text-xs text-slate-400 mb-6">Report bugs or suggest new Git commands to Abizer.</p>
 
           {sent ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center animate-in zoom-in">
+            <div className="flex-1 flex flex-col items-center justify-center text-center py-10">
               <CheckCircle size={48} className="text-green-500 mb-3" />
               <h3 className="text-white font-bold text-lg">Message Sent!</h3>
               <p className="text-slate-400 text-sm mt-1">Thank you for your feedback.</p>
@@ -113,15 +117,23 @@ const Guide = ({ isOpen, onClose }) => {
                 <input name="user_email" type="email" required className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white text-sm outline-none focus:border-blue-500" placeholder="john@example.com" />
               </div>
 
-              <div className="flex-1">
-                <label className="text-xs font-bold text-slate-400 uppercase">Message / Suggestion</label>
-                <textarea name="message" required className="w-full h-full min-h-[120px] bg-slate-900 border border-slate-700 rounded p-2 text-white text-sm outline-none focus:border-blue-500 resize-none" placeholder="Hey Abizer, please add the 'git cherry-pick' command..." />
+              <div className="flex-1 flex flex-col">
+                <label className="text-xs font-bold text-slate-400 uppercase mb-1">Message / Suggestion</label>
+                {/* UPDATED TEXTAREA: 
+                    h-32 for mobile (fixed height), md:h-full for desktop (expands to fill space)
+                */}
+                <textarea 
+                  name="message" 
+                  required 
+                  className="w-full h-32 md:h-full bg-slate-900 border border-slate-700 rounded p-2 text-white text-sm outline-none focus:border-blue-500 resize-none" 
+                  placeholder="Hey Abizer, please add the 'git cherry-pick' command..." 
+                />
               </div>
 
               <button 
                 type="submit" 
                 disabled={loading}
-                className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-50 mt-2"
               >
                 {loading ? 'Sending...' : <><Send size={16} /> Send Feedback</>}
               </button>

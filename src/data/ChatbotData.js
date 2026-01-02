@@ -1,10 +1,19 @@
 // src/data/chatbotData.js
 
+/**
+ * Chatbot Knowledge Base
+ * * Structure:
+ * - keywords: Array of strings that trigger the response.
+ * - answer: The string response displayed by the bot.
+ */
+
 export const chatData = [
-  // --- ADMIN & WEBSITE USAGE (Updated Answer) ---
+  // =================================================================
+  // ADMIN & WEBSITE USAGE
+  // =================================================================
   {
     keywords: ["add command", "create command", "new command", "admin login", "login", "signin", "how to add"],
-    answer: "If you are admin (abizer) so enter credentials otherwise mail the owner click on the question icon side of the admin login"
+    answer: "If you are the Admin (Abizer), enter your credentials. Otherwise, please email the owner. You can find the contact link by clicking the '?' icon next to the Admin Login button."
   },
   {
     keywords: ["delete command", "remove command", "delete"],
@@ -16,7 +25,7 @@ export const chatData = [
   },
   {
     keywords: ["search", "find", "looking for", "hindi", "."],
-    answer: "Use the search bar at the top. You can type in English, Hindi, or . keywords to find commands."
+    answer: "Use the search bar at the top. You can type in English, Hindi, or specific keywords to find commands."
   },
   {
     keywords: ["voice", "speak", "mic", "microphone"],
@@ -28,10 +37,12 @@ export const chatData = [
   },
   {
     keywords: ["dark mode", "theme", "colors"],
-    answer: "The website uses a dark theme by default to reduce eye strain for developers."
+    answer: "The website uses a dark theme by default to reduce eye strain for developers. You can toggle themes using the Sun/Moon icon."
   },
 
-  // --- GIT: SETUP & CONFIG ---
+  // =================================================================
+  // GIT: SETUP & CONFIG
+  // =================================================================
   {
     keywords: ["init", "start git", "initialize", "new repo"],
     answer: "Use `git init` to start a new Git repository in your current folder."
@@ -57,7 +68,9 @@ export const chatData = [
     answer: "Create a `.gitignore` file and add filenames (like `node_modules`) to stop Git from tracking them."
   },
 
-  // --- GIT: BASICS ---
+  // =================================================================
+  // GIT: BASICS
+  // =================================================================
   {
     keywords: ["add file", "stage file", "add ."],
     answer: "Use `git add [filename]` for one file, or `git add .` to stage all changed files."
@@ -83,7 +96,9 @@ export const chatData = [
     answer: "Use `git fetch` to download changes from the remote without merging them into your code."
   },
 
-  // --- GIT: BRANCHING ---
+  // =================================================================
+  // GIT: BRANCHING
+  // =================================================================
   {
     keywords: ["branch", "create branch", "new branch"],
     answer: "Use `git branch [name]` to create a branch, or `git branch` to list them."
@@ -105,7 +120,9 @@ export const chatData = [
     answer: "Use `git merge [branch-name]` to combine changes from another branch into your current one."
   },
 
-  // --- GIT: ADVANCED / UNDO ---
+  // =================================================================
+  // GIT: ADVANCED / UNDO
+  // =================================================================
   {
     keywords: ["undo commit", "reset soft"],
     answer: "Use `git reset --soft HEAD~1` to undo the last commit but keep changes in your files."
@@ -155,7 +172,9 @@ export const chatData = [
     answer: "Use `git tag [v1.0]` to mark a specific point in history as important (like a release)."
   },
 
-  // --- VS CODE SHORTCUTS ---
+  // =================================================================
+  // VS CODE SHORTCUTS
+  // =================================================================
   {
     keywords: ["open vs code", "start code", "launch"],
     answer: "Type `code .` in your terminal to open the current folder in VS Code."
@@ -213,7 +232,9 @@ export const chatData = [
     answer: "Press `Ctrl + \\` to split the editor into two screens."
   },
 
-  // --- CMD / TERMINAL COMMANDS ---
+  // =================================================================
+  // CMD / TERMINAL COMMANDS
+  // =================================================================
   {
     keywords: ["clear", "cls", "clean screen"],
     answer: "Use `cls` (Windows) or `clear` (Mac/Linux) to clear the terminal screen."
@@ -259,7 +280,9 @@ export const chatData = [
     answer: "Type `tasklist` (Windows) or `top` (Mac/Linux) to see all running programs."
   },
 
-  // --- GENERAL / CHIT-CHAT ---
+  // =================================================================
+  // GENERAL / CHIT-CHAT
+  // =================================================================
   {
     keywords: ["hello", "hi", "hey", "hola"],
     answer: "Hello! I am the DevHelper Bot. Ask me about Git, VS Code, or CMD commands."
@@ -280,8 +303,32 @@ export const chatData = [
     keywords: ["bye", "goodbye"],
     answer: "Goodbye! See you next time."
   },
+  
+  // =================================================================
+  // HOSTING / DEPLOYMENT GUIDE
+  // =================================================================
   {
     keywords: ["upload website", "push to github", "host on github", "upload code", "deploy", "how to push"],
-    answer: "**Note:** These commands are often available directly on your GitHub dashboard after creating a new repository. Copying them from there is easier and faster.\n\nTo upload your website to GitHub, follow these steps in order:\n\n1. Initialize Git:\n`git init`\n\n2. Add all files:\n`git add .`\n\n3. Save changes:\n`git commit -m \"First commit\"`\n\n4. Rename branch to main:\n`git branch -M main`\n\n5. Connect to GitHub (replace URL with your repo link):\n`git remote add origin https://github.com/username/repo-name.git`\n\n6. Upload:\n`git push -u origin main`"
+    answer: `**Note:** These commands are often available directly on your GitHub dashboard after creating a new repository. Copying them from there is easier and faster.
+
+To upload your website to GitHub manually, follow these steps in order:
+
+1. **Initialize Git:**
+   \`git init\`
+
+2. **Add all files:**
+   \`git add .\`
+
+3. **Save changes:**
+   \`git commit -m "First commit"\`
+
+4. **Rename branch to main:**
+   \`git branch -M main\`
+
+5. **Connect to GitHub** (replace URL with your repo link):
+   \`git remote add origin https://github.com/username/repo-name.git\`
+
+6. **Upload:**
+   \`git push -u origin main\``
   },
 ];

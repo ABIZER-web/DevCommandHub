@@ -18,19 +18,14 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const itemsPerPage = 12; 
 
-  // --- THEME & SCROLL LOGIC ---
+  // --- FORCE DARK MODE PERMANENTLY ---
   useEffect(() => {
-    const root = window.document.documentElement;
-    if (theme === 'dark') root.classList.add('dark');
-    else root.classList.remove('dark');
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+    document.documentElement.classList.add('dark');
+  }, []);
 
-  const toggleTheme = () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-
+  // --- FORCE SCROLL TOP ---
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
@@ -38,7 +33,6 @@ function App() {
     window.scrollTo(0, 0);
   }, []);
 
-  // --- ANIMATION VARIANTS ---
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -48,7 +42,7 @@ function App() {
     exit: { 
       opacity: 0, 
       y: -20, 
-      transition: { duration: 0.2 } 
+      transition: { duration: 0.1 } 
     }
   };
 
@@ -82,6 +76,8 @@ function App() {
   };
 
   useEffect(() => { fetchCommands(); }, []);
+  
+  // Reset page when switching tabs or searching
   useEffect(() => { setCurrentPage(1); }, [activeTab, searchQuery]);
 
   const filteredCommands = commands.filter(cmd => 
@@ -103,7 +99,7 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans selection:bg-blue-500/30 flex flex-col overflow-x-hidden transition-colors duration-300">
+    <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-blue-500/30 flex flex-col overflow-x-hidden">
       
       {/* NAVBAR */}
       <motion.div 
@@ -117,7 +113,6 @@ function App() {
           isAdmin={isAdmin} onLogin={setIsAdmin} onLogout={() => setIsAdmin(false)}
           onOpenGuide={() => setIsGuideOpen(true)}
           onLogoClick={handleLogoClick}
-          theme={theme} toggleTheme={toggleTheme}
         />
       </motion.div>
 
@@ -130,7 +125,7 @@ function App() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex gap-2 md:gap-4 mb-8 bg-white dark:bg-slate-900 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-inner max-w-3xl relative transition-colors duration-300"
+            className="flex gap-2 md:gap-4 mb-8 bg-slate-900 p-1.5 rounded-xl border border-slate-800 shadow-inner max-w-3xl relative"
           >
             {tabs.map((tab) => (
               <button
@@ -141,14 +136,14 @@ function App() {
                 {activeTab === tab.id && (
                   <motion.div
                     layoutId="active-pill"
-                    className="absolute inset-0 bg-blue-100 dark:bg-blue-600 rounded-lg shadow-sm"
+                    className="absolute inset-0 bg-blue-600 rounded-lg shadow-sm"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
                 <span className={`relative z-10 flex items-center justify-center gap-2 ${
                   activeTab === tab.id 
-                    ? 'text-blue-700 dark:text-white' 
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    ? 'text-white' 
+                    : 'text-slate-400 hover:text-white'
                 }`}>
                   <tab.icon size={18} />
                   {tab.label}
@@ -160,15 +155,16 @@ function App() {
           {/* CONTENT AREA */}
           <div className="min-h-[400px]">
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center h-64 text-blue-500 dark:text-blue-400 gap-3">
+              <div className="flex flex-col items-center justify-center h-64 text-blue-400 gap-3">
                 <Loader2 size={40} className="animate-spin" />
                 <p className="text-slate-500 text-sm animate-pulse">Loading commands...</p>
               </div>
             ) : (
-              // --- FIXED ANIMATION LOGIC HERE ---
               <AnimatePresence mode='wait'>
                 <motion.div 
-                  key={activeTab + currentPage} // The Key is on the CONTAINER now
+                  // --- FIX IS HERE: ADDED 'searchQuery' TO KEY ---
+                  // This forces the grid to completely refresh when you type
+                  key={activeTab + currentPage + searchQuery}
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
@@ -177,12 +173,12 @@ function App() {
                 >
                   {currentCommands.length > 0 ? (
                     currentCommands.map((cmd) => (
-                      <motion.div key={cmd.id} variants={itemVariants} layout>
+                      <motion.div key={cmd.id} variants={itemVariants}>
                         <CommandCard cmd={cmd} isAdmin={isAdmin} onDelete={handleDeleteCommand} />
                       </motion.div>
                     ))
                   ) : (
-                    <motion.div variants={itemVariants} className="col-span-full flex flex-col items-center justify-center text-slate-500 py-20 border-2 border-dashed border-slate-300 dark:border-slate-800 rounded-xl">
+                    <motion.div variants={itemVariants} className="col-span-full flex flex-col items-center justify-center text-slate-500 py-20 border-2 border-dashed border-slate-800 rounded-xl">
                       <p>No commands found.</p>
                     </motion.div>
                   )}
@@ -202,19 +198,19 @@ function App() {
               <button 
                 onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} 
                 disabled={currentPage === 1} 
-                className="p-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 shadow-sm transition-colors text-slate-700 dark:text-white"
+                className="p-2 rounded-full bg-slate-800 border border-slate-700 hover:bg-slate-700 disabled:opacity-30 shadow-sm transition-colors text-white"
               >
                 <ChevronLeft size={20} />
               </button>
               
-              <span className="text-slate-600 dark:text-slate-400 text-sm">
-                Page <span className="text-slate-900 dark:text-white font-bold">{currentPage}</span> of {totalPages}
+              <span className="text-slate-400 text-sm">
+                Page <span className="text-white font-bold">{currentPage}</span> of {totalPages}
               </span>
               
               <button 
                 onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} 
                 disabled={currentPage === totalPages} 
-                className="p-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 shadow-sm transition-colors text-slate-700 dark:text-white"
+                className="p-2 rounded-full bg-slate-800 border border-slate-700 hover:bg-slate-700 disabled:opacity-30 shadow-sm transition-colors text-white"
               >
                 <ChevronRight size={20} />
               </button>
@@ -223,7 +219,7 @@ function App() {
         </div>
 
         {isAdmin && (
-          <aside className="w-full lg:w-80 flex flex-col gap-6 shrink-0 border-l border-slate-200 dark:border-slate-800 pl-6">
+          <aside className="w-full lg:w-80 flex flex-col gap-6 shrink-0 border-l border-slate-800 pl-6">
              <AddCommandForm onCommandAdded={fetchCommands} />
           </aside>
         )}

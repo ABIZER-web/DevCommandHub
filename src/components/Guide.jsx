@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, HelpCircle, MessageSquare, Send, CheckCircle } from 'lucide-react';
+import { X, HelpCircle, MessageSquare, Send, CheckCircle, Instagram, Linkedin, Mail, MessageCircle } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
 const Guide = ({ isOpen, onClose }) => {
@@ -11,7 +11,6 @@ const Guide = ({ isOpen, onClose }) => {
     e.preventDefault();
     setLoading(true);
 
-    // Using your provided EmailJS credentials
     emailjs.sendForm('service_stannln', 'template_1oi04sq', form.current, 'E3aLBvre2I4GgZoq8')
       .then((result) => {
           setSent(true);
@@ -27,11 +26,6 @@ const Guide = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex justify-center items-center p-4 animate-in fade-in">
-      {/* UPDATED CONTAINER:
-        - max-h-[90vh]: Keeps it from being taller than the screen
-        - overflow-y-auto: Allows scrolling if content is too tall (crucial for mobile)
-        - scrollbar-hide: Hides the scrollbar for a cleaner look (optional class)
-      */}
       <div className="bg-slate-900 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 shadow-2xl flex flex-col md:flex-row scrollbar-hide">
         
         {/* LEFT SIDE: GUIDE & FAQ */}
@@ -64,15 +58,7 @@ const Guide = ({ isOpen, onClose }) => {
               </p>
             </section>
 
-             {/* 3. ADMIN ACCESS */}
-             <section>
-              <h3 className="text-lg font-bold text-white mb-2">🔐 Admin Access</h3>
-              <p className="text-sm">
-                Only the Admin (Abizer) can add or delete commands. Visitors can view and copy commands freely.
-              </p>
-            </section>
-
-            {/* 4. FAQ */}
+            {/* 3. FAQ */}
             <section>
               <h3 className="text-lg font-bold text-white mb-2">❓ FAQs</h3>
               <div className="space-y-3">
@@ -86,6 +72,61 @@ const Guide = ({ isOpen, onClose }) => {
                 </details>
               </div>
             </section>
+
+            <hr className="border-slate-700" />
+
+            {/* 4. CONTACT DIRECTLY (NEW ADDITION) */}
+            <section>
+              <h3 className="text-lg font-bold text-white mb-3">📞 Direct Contact</h3>
+              <p className="text-sm text-slate-400 mb-4">
+                Want changes to the website or have a specific query? Contact <strong>Abizer</strong> directly:
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* WhatsApp */}
+                <a 
+                  href="https://wa.me/917426825253" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 p-2.5 bg-green-600 hover:bg-green-500 text-white rounded-lg transition-all font-medium text-sm"
+                >
+                  <MessageCircle size={18} />
+                  WhatsApp
+                </a>
+
+                {/* Instagram */}
+                <a 
+                  href="https://www.instagram.com/_a.sa1fy_?igsh=Z2x4MTgwMXU3a25l" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 p-2.5 bg-pink-600 hover:bg-pink-500 text-white rounded-lg transition-all font-medium text-sm"
+                >
+                  <Instagram size={18} />
+                  Instagram
+                </a>
+
+                {/* LinkedIn */}
+                <a 
+                  href="https://www.linkedin.com/in/mr-abizer-saify-a3b936278" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 p-2.5 bg-blue-700 hover:bg-blue-600 text-white rounded-lg transition-all font-medium text-sm"
+                >
+                  <Linkedin size={18} />
+                  LinkedIn
+                </a>
+
+                {/* Email */}
+                <a 
+                  href="mailto:abizersaify@gmail.com" 
+                  className="flex items-center justify-center gap-2 p-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-all font-medium text-sm"
+                >
+                  <Mail size={18} />
+                  Email
+                </a>
+              </div>
+            </section>
+
           </div>
         </div>
 
@@ -96,7 +137,7 @@ const Guide = ({ isOpen, onClose }) => {
           <h2 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
             <MessageSquare className="text-green-400" /> Feedback
           </h2>
-          <p className="text-xs text-slate-400 mb-6">Report bugs or suggest new Git commands to Abizer.</p>
+          <p className="text-xs text-slate-400 mb-6">Report bugs or suggest new Git commands.</p>
 
           {sent ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center py-10">
@@ -119,9 +160,6 @@ const Guide = ({ isOpen, onClose }) => {
 
               <div className="flex-1 flex flex-col">
                 <label className="text-xs font-bold text-slate-400 uppercase mb-1">Message / Suggestion</label>
-                {/* UPDATED TEXTAREA: 
-                    h-32 for mobile (fixed height), md:h-full for desktop (expands to fill space)
-                */}
                 <textarea 
                   name="message" 
                   required 

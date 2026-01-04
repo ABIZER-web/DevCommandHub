@@ -2,9 +2,6 @@
 
 /**
  * Chatbot Knowledge Base
- * * Structure:
- * - keywords: Array of strings that trigger the response.
- * - answer: The string response displayed by the bot.
  */
 
 export const chatData = [
@@ -37,7 +34,7 @@ export const chatData = [
   },
   {
     keywords: ["dark mode", "theme", "colors"],
-    answer: "The website uses a dark theme by default to reduce eye strain for developers. You can toggle themes using the Sun/Moon icon."
+    answer: "The website uses a permanent dark theme designed for developers."
   },
 
   // =================================================================
@@ -305,13 +302,29 @@ export const chatData = [
   },
   
   // =================================================================
-  // HOSTING / DEPLOYMENT GUIDE
+  // HOSTING / DEPLOYMENT GUIDE (UPDATED)
   // =================================================================
   {
-    keywords: ["upload website", "push to github", "host on github", "upload code", "deploy", "how to push"],
-    answer: `**Note:** These commands are often available directly on your GitHub dashboard after creating a new repository. Copying them from there is easier and faster.
+    keywords: ["push to existing", "existing repo", "connect existing", "remote exists", "already have repo", "remote origin already exists"],
+    answer: `To push your local code to an existing GitHub repository:
 
-To upload your website to GitHub manually, follow these steps in order:
+1. **Remove old link (if any):**
+   \`git remote remove origin\`
+
+2. **Add new link:**
+   \`git remote add origin [YOUR_REPO_URL]\`
+
+3. **Rename branch:**
+   \`git branch -M main\`
+
+4. **Push:**
+   \`git push -u origin main\``
+  },
+  {
+    keywords: ["upload website", "push to github", "host on github", "upload code", "deploy", "how to push"],
+    answer: `**Note:** If you just created a repo, copy the commands from GitHub.
+
+To upload a FRESH project to GitHub:
 
 1. **Initialize Git:**
    \`git init\`
@@ -325,7 +338,7 @@ To upload your website to GitHub manually, follow these steps in order:
 4. **Rename branch to main:**
    \`git branch -M main\`
 
-5. **Connect to GitHub** (replace URL with your repo link):
+5. **Connect to GitHub:**
    \`git remote add origin https://github.com/username/repo-name.git\`
 
 6. **Upload:**

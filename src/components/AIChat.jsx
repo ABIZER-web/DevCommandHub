@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, X, MessageCircle, Loader2 } from 'lucide-react';
-import { chatData } from "../data/chatbotData";
+import { chatData } from "../data/ChatbotData";
 
 const AIChat = () => {
   const [isOpen, setIsOpen] = useState(false);

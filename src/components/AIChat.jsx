@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, X, MessageCircle, Loader2 } from 'lucide-react';
-import { chatData } from "../data/ChatbotData";
+import { chatData } from "../data/chatbotData";
 
 const AIChat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,13 +28,15 @@ const AIChat = () => {
 
   const handleAskBot = (e) => {
     e.preventDefault();
-    if (!prompt.trim()) return;
+    const currentQuery = prompt.trim(); // 1. Capture the text
+    if (!currentQuery) return;
 
     setLoading(true);
     setResponse(null);
+    setPrompt(''); // 2. Clear the input field immediately
 
     setTimeout(() => {
-      const userQuery = prompt.toLowerCase();
+      const userQuery = currentQuery.toLowerCase(); // 3. Use captured text for search
       const match = chatData.find(item => 
         item.keywords.some(keyword => userQuery.includes(keyword))
       );

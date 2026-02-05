@@ -1,15 +1,16 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth, GithubAuthProvider } from "firebase/auth"; // <--- Import Auth tools
+import { getAuth, GithubAuthProvider } from "firebase/auth"; 
 
+// Use environment variables (Vite requires import.meta.env)
 const firebaseConfig = {
-  apiKey: "AIzaSyBmdTjeQxgPIr4aVEp4UgNrLZsCU_-kr2I",
-  authDomain: "devcommandhub-1.firebaseapp.com",
-  projectId: "devcommandhub-1",
-  storageBucket: "devcommandhub-1.firebasestorage.app",
-  messagingSenderId: "376704616312",
-  appId: "1:376704616312:web:0c1dc1dae49d4437b22a8d",
-  measurementId: "G-TL9JBPS6L4"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
@@ -17,5 +18,5 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Services
 export const db = getFirestore(app);
-export const auth = getAuth(app); // <--- Export Auth
-export const provider = new GithubAuthProvider(); // <--- Export GitHub Provider
+export const auth = getAuth(app); 
+export const provider = new GithubAuthProvider();

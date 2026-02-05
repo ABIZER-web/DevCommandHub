@@ -1,26 +1,51 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Github, Instagram, Linkedin, Heart, Eye } from 'lucide-react';
-import { supabase } from '../supabaseClient'; 
+import { db } from '../firebase';
+import { doc, getDoc, setDoc, updateDoc, increment } from 'firebase/firestore';
 
 const Footer = () => {
   const [visitCount, setVisitCount] = useState(0);
-  const hasFetched = useRef(false);
 
   useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
+    const handleVisitorCount = async () => {
+      try {
+        const statsRef = doc(db, "site_stats", "main");
+        
+        // 1. Check if this specific browser has visited before using localStorage
+        const hasVisited = localStorage.getItem("devhub_visited_v1");
 
-    const updateVisitorCount = async () => {
-      const { data, error } = await supabase.rpc('increment_visitor_count');
-      
-      if (data) {
-        setVisitCount(data);
-      } else if (error) {
-        console.error('Error fetching visitor count:', error);
+        if (!hasVisited) {
+          // --- NEW VISITOR LOGIC ---
+          const docSnap = await getDoc(statsRef);
+
+          if (docSnap.exists()) {
+            // Document exists, increment the count
+            await updateDoc(statsRef, { visits: increment(1) });
+            // Optimistically update local state to show new count immediately
+            setVisitCount(docSnap.data().visits + 1);
+          } else {
+            // First time ever (if collection is empty), create it starting at 1
+            await setDoc(statsRef, { visits: 1 });
+            setVisitCount(1);
+          }
+          
+          // Mark this browser as "visited" permanently so refresh doesn't count again
+          localStorage.setItem("devhub_visited_v1", "true");
+        } else {
+          // --- RETURNING VISITOR LOGIC ---
+          // Just fetch the latest count to display it (Read-Only)
+          const latestSnap = await getDoc(statsRef);
+          if (latestSnap.exists()) {
+            setVisitCount(latestSnap.data().visits);
+          }
+        }
+
+      } catch (error) {
+        console.error('Error handling visitor count:', error);
       }
     };
 
-    updateVisitorCount();
+    handleVisitorCount();
   }, []);
 
   return (
@@ -33,11 +58,9 @@ const Footer = () => {
             <p>&copy; {new Date().getFullYear()} DevCommandHub. All rights reserved.</p>
             <p className="text-xs mt-1 flex items-center justify-center md:justify-start gap-1">
               Built with <Heart size={10} className="text-red-500 fill-red-500 animate-pulse" /> by 
-              {/* ANIMATED NAME START */}
               <span className="font-bold text-slate-200 hover:text-blue-400 hover:scale-110 hover:tracking-wide transition-all duration-300 cursor-pointer inline-block ml-1">
                 Abizer
               </span>
-              {/* ANIMATED NAME END */}
             </p>
           </div>
 

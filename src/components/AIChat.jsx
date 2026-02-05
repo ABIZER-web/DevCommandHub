@@ -1,139 +1,146 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, X, MessageCircle, Loader2 } from 'lucide-react';
-import { chatData } from "../data/ChatbotData";
+import { MessageSquare, Send, Sparkles, Bot, Loader2 } from 'lucide-react';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import ReactMarkdown from 'react-markdown';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Replace with your actual API key
+const API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
 
 const AIChat = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [prompt, setPrompt] = useState('');
-  const [response, setResponse] = useState(null);
-  const [loading, setLoading] = useState(false);
-  
-  // Refs
-  const chatEndRef = useRef(null);   
-  const containerRef = useRef(null); 
+  const [messages, setMessages] = useState([
+    { role: 'model', text: "Hi! I'm DevHelper. Ask me anything about Git, VS Code, or Terminal commands." }
+  ]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  // Auto-scroll to bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [response, isOpen]);
+    scrollToBottom();
+  }, [messages, isOpen]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isOpen && containerRef.current && !containerRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
+  // Handle AI Response
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
 
-  const handleAskBot = (e) => {
-    e.preventDefault();
-    const currentQuery = prompt.trim(); // 1. Capture the text
-    if (!currentQuery) return;
+    const userMessage = { role: 'user', text: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
 
-    setLoading(true);
-    setResponse(null);
-    setPrompt(''); // 2. Clear the input field immediately
+    try {
+      const genAI = new GoogleGenerativeAI(API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      
+      const chat = model.startChat({
+        history: messages.map(m => ({
+          role: m.role === 'model' ? 'model' : 'user',
+          parts: [{ text: m.text }],
+        })),
+      });
 
-    setTimeout(() => {
-      const userQuery = currentQuery.toLowerCase(); // 3. Use captured text for search
-      const match = chatData.find(item => 
-        item.keywords.some(keyword => userQuery.includes(keyword))
-      );
+      const result = await chat.sendMessage(input);
+      const response = await result.response;
+      const text = response.text();
 
-      if (match) {
-        setResponse(match.answer);
-      } else {
-        setResponse("I don't have an answer for that yet. 🤖\n\nPlease try searching on Google, ChatGPT, or Gemini.");
-      }
-      setLoading(false);
-    }, 600);
+      setMessages(prev => [...prev, { role: 'model', text: text }]);
+    } catch (error) {
+      console.error("AI Error:", error);
+      setMessages(prev => [...prev, { role: 'model', text: "Sorry, I encountered an error. Please try again." }]);
+    }
+    setIsLoading(false);
   };
 
   return (
-    <div ref={containerRef} className="fixed bottom-8 right-4 z-[60] flex flex-col items-end gap-3">
+    <div className="fixed bottom-6 right-6 z-[60] flex flex-col items-end gap-4">
       
-      {/* 1. DEFINE CUSTOM FLOAT ANIMATION */}
-      <style>{`
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); } /* Moves up 10px */
-          100% { transform: translateY(0px); }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
-
-      {/* CHAT WINDOW */}
-      {isOpen && (
-        <div className="w-[85vw] sm:w-[350px] h-[500px] max-h-[70vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-200">
-          
-          {/* Header */}
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-3 flex justify-between items-center text-white shrink-0">
-            <div className="flex items-center gap-2">
-              <Bot size={20} />
-              <h3 className="font-bold text-sm">DevHelper Bot</h3>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className="w-[90vw] md:w-96 h-[500px] max-h-[70vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+          >
+            {/* --- HEADER (NO CLOSE BUTTON) --- */}
+            <div className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2 text-white font-bold">
+                <Bot size={20} />
+                <span>DevHelper Bot</span>
+              </div>
+              {/* Close button removed as requested. Click the bubble to close. */}
             </div>
-            <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1 rounded-full transition-colors">
-              <X size={18} />
-            </button>
-          </div>
 
-          {/* Chat Content */}
-          <div className="flex-1 p-4 overflow-y-auto bg-slate-950/50 scrollbar-thin scrollbar-thumb-slate-700 min-h-0">
-            {!response && !loading && (
-              <div className="flex flex-col items-center justify-center h-full text-slate-500 text-sm text-center gap-2">
-                <Bot size={40} className="text-slate-700" />
-                <p>Hi! Ask me about Git, VS Code,<br/>or website help.</p>
-              </div>
-            )}
+            {/* --- MESSAGES AREA --- */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-950/50 scrollbar-thin scrollbar-thumb-slate-700">
+              {messages.map((msg, idx) => (
+                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[85%] rounded-2xl p-3 text-sm leading-relaxed ${
+                    msg.role === 'user' 
+                      ? 'bg-blue-600 text-white rounded-br-none' 
+                      : 'bg-slate-800 text-slate-200 rounded-bl-none border border-slate-700'
+                  }`}>
+                    <ReactMarkdown>{msg.text}</ReactMarkdown>
+                  </div>
+                </div>
+              ))}
+              
+              {/* Loading Indicator */}
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="bg-slate-800 rounded-2xl rounded-bl-none p-3 border border-slate-700 flex items-center gap-2 text-xs text-slate-400">
+                    <Loader2 size={14} className="animate-spin text-blue-400" />
+                    Thinking...
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
 
-            {response && (
-              <div className="bg-slate-800 p-3 rounded-tr-xl rounded-bl-xl rounded-br-xl text-sm text-slate-200 border-l-4 border-purple-500 whitespace-pre-wrap animate-in zoom-in-95">
-                {response}
-              </div>
-            )}
+            {/* --- INPUT AREA --- */}
+            <div className="p-3 bg-slate-900 border-t border-slate-800 flex gap-2 shrink-0">
+              <input 
+                type="text" 
+                placeholder="Ask about commands..." 
+                className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              />
+              <button 
+                onClick={handleSend}
+                disabled={isLoading || !input.trim()}
+                className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Send size={18} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-            {loading && (
-              <div className="flex items-center gap-2 text-slate-500 text-xs mt-2">
-                <Loader2 className="animate-spin" size={14} /> Thinking...
-              </div>
-            )}
-            <div ref={chatEndRef} />
-          </div>
-
-          {/* Input Footer */}
-          <form onSubmit={handleAskBot} className="p-3 bg-slate-900 border-t border-slate-700 flex gap-2 shrink-0">
-            <input 
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Type question..." 
-              className="flex-1 bg-slate-950 text-white text-sm rounded-full border border-slate-700 px-4 py-2 outline-none focus:border-purple-500 transition-colors"
-            />
-            <button 
-              type="submit" 
-              disabled={loading || !prompt}
-              className="bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white p-2 rounded-full transition-all"
-            >
-              <Send size={18} />
-            </button>
-          </form>
-        </div>
-      )}
-
-      {/* FLOATING TOGGLE BUTTON */}
-      {/* 2. Added 'animate-float' class only when NOT open */}
-      <button 
+      {/* --- FLOATING TOGGLE BUTTON --- */}
+      {/* Added the floating animation when closed */}
+      <motion.button 
         onClick={() => setIsOpen(!isOpen)}
-        className={`p-3 sm:p-4 rounded-full shadow-lg shadow-purple-900/50 transition-all duration-300 hover:scale-110 active:scale-95 ${
+        animate={isOpen ? {} : { y: [0, -10, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className={`p-4 rounded-full shadow-lg shadow-purple-900/40 transition-colors ${
           isOpen 
-            ? 'bg-slate-700 text-white rotate-90' 
-            : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white animate-float'
+            ? 'bg-slate-700 text-white' 
+            : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
         }`}
       >
-        {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
-      </button>
+        {isOpen ? <Sparkles size={24} className="rotate-180 transition-transform" /> : <MessageSquare size={24} />}
+      </motion.button>
 
     </div>
   );
